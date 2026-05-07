@@ -24,6 +24,10 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
+    - name: Install Google Chrome
+      run: |
+        sudo apt-get update
+        sudo apt-get install google-chrome-stable -y
     - name: Build with Maven
       run: mvn -B package --file pom.xml
     - name: Run tests
