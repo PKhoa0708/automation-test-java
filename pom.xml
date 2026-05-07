@@ -11,6 +11,8 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Khai báo giá trị mặc định cho biến headless để tránh lỗi IDE -->
+        <headless>false</headless>
     </properties>
 
     <dependencies>
@@ -44,11 +46,14 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
                 <configuration>
-                    <!-- Chạy các phương thức kiểm thử song song -->
-                    <parallel>methods</parallel>
-                    <!-- Sử dụng tối đa 4 luồng -->
+                    <!-- Chạy song song theo class, không chạy song song các method trong cùng 1 class để tránh xung đột WebDriver -->
+                    <parallel>classes</parallel>
                     <threadCount>4</threadCount>
                     <useUnlimitedThreads>false</useUnlimitedThreads>
+                    <!-- Truyền biến hệ thống (như headless) từ lệnh Maven vào trong code Test -->
+                    <systemPropertyVariables>
+                        <headless>${headless}</headless>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
         </plugins>
