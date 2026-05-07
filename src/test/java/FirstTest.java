@@ -1,6 +1,6 @@
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions; // Import ChromeOptions
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -13,16 +13,28 @@ public class FirstTest {
 
     @BeforeMethod
     public void setUp() {
-        // Cấu hình ChromeOptions cho chế độ headless
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless"); // Chạy Chrome ở chế độ không có giao diện người dùng
-        options.addArguments("--disable-gpu"); // Tắt GPU (thường cần thiết cho headless trên Linux)
-        options.addArguments("--no-sandbox"); // Tắt sandbox (thường cần thiết cho môi trường CI/CD)
-        options.addArguments("--window-size=1920,1080"); // Đặt kích thước cửa sổ ảo
+        
+        // Đọc System property "headless" (được truyền vào từ Maven command line)
+        String headlessMode = System.getProperty("headless", "false");
+        
+        if (Boolean.parseBoolean(headlessMode)) {
+            System.out.println("Running Chrome in Headless mode...");
+            options.addArguments("--headless");
+            options.addArguments("--disable-gpu");
+            options.addArguments("--no-sandbox");
+            options.addArguments("--window-size=1920,1080");
+        } else {
+            System.out.println("Running Chrome in Normal mode...");
+        }
 
-        driver = new ChromeDriver(options); // Truyền options vào ChromeDriver
+        driver = new ChromeDriver(options);
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-        driver.manage().window().maximize(); // Lệnh này có thể không có tác dụng trong headless, nhưng không gây hại
+        
+        if (!Boolean.parseBoolean(headlessMode)) {
+            driver.manage().window().maximize();
+        }
+        
         driver.get("https://banve.my-board.org/auth/login.php");
         
         // Khởi tạo đối tượng LoginPage
